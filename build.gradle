@@ -7,7 +7,7 @@ version = '0.0.1'
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
+        languageVersion = JavaLanguageVersion.of(25)
     }
 }
 
@@ -16,9 +16,13 @@ repositories {
 }
 
 dependencies {
+    // JUnit BOM: JUnit 관련 모듈들의 버전을 한 곳(5.11.4)에서 통일 관리
     testImplementation platform('org.junit:junit-bom:5.11.4')
+    // JUnit 5 본체: @Test, @DisplayName, @ParameterizedTest 등 (버전은 위 BOM이 결정)
     testImplementation 'org.junit.jupiter:junit-jupiter'
+    // Gradle이 테스트를 실행할 때 쓰는 런처 (Gradle 9부터 명시 필수, 테스트 코드에서 직접 쓸 일 없음)
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    // AssertJ: assertThat(...).isEqualTo(...) 같은 fluent 단언 라이브러리
     testImplementation 'org.assertj:assertj-core:3.27.3'
 }
 
