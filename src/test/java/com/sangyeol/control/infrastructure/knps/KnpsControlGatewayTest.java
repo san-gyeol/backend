@@ -11,7 +11,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.web.client.RestClient;
 
 @Disabled("실제 공단 서버 호출 — 수동 검증용. 마지막 통과: 2026-08-25")
-class KnpsControlAdapterTest {
+class KnpsControlGatewayTest {
 
     @Test
     void 실제_공단_페이지에서_무등산_통제정보_두_건을_가져온다() {
@@ -20,7 +20,7 @@ class KnpsControlAdapterTest {
                 .baseUrl("https://www.knps.or.kr")
                 .defaultHeader(HttpHeaders.USER_AGENT, "sangyeol-backend/0.1")
                 .build();
-        KnpsControlAdapter adapter = new KnpsControlAdapter(client);
+        KnpsControlGateway adapter = new KnpsControlGateway(client);
 
         // when
         List<ControlSnapshot> snapshots = adapter.fetch();

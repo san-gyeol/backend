@@ -7,13 +7,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
 @Component
-public class KnpsControlAdapter implements ControlGateway {
+public class KnpsControlGateway implements ControlGateway {
 
     private static final String CONTROL_LIST_URI = "/front/portal/safe/acsCtrList.do?menuNo=8000340";
 
     private final RestClient knpsRestClient;
 
-    public KnpsControlAdapter(RestClient knpsRestClient) {
+    public KnpsControlGateway(RestClient knpsRestClient) {
         this.knpsRestClient = knpsRestClient;
     }
 
