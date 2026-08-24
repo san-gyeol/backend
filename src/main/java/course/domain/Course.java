@@ -1,4 +1,4 @@
-package course;
+package course.domain;
 
 import java.time.Duration;
 import java.util.Objects;

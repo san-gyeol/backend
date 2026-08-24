@@ -1,4 +1,4 @@
-package course;
+package course.domain;
 
 public record CourseName(String name) {
     public CourseName {

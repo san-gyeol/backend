@@ -1,4 +1,4 @@
-package course;
+package course.domain;
 
 public record Distance(double kilometers) {
     public Distance {
