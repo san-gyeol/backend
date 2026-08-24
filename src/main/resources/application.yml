@@ -1,5 +1,2 @@
-spring:
-  http:
-    client:
-      connect-timeout: 2s
-      read-timeout: 5s
+# 외부 클라이언트 타임아웃은 각 ClientConfig 클래스에서 설정한다 (KnpsClientConfig 참고)
+# Boot 4는 RestClient.Builder를 자동 구성하지 않아 spring.http.client.* 속성이 수동 빌드 클라이언트에 적용되지 않음
