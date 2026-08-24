@@ -16,6 +16,8 @@ repositories {
 }
 
 dependencies {
+    // HTML 파싱 (KNPS 통제정보 페이지) — 프로젝트 첫 운영 의존성
+    implementation 'org.jsoup:jsoup:1.21.1'
     // JUnit BOM: JUnit 관련 모듈들의 버전을 한 곳(5.11.4)에서 통일 관리
     testImplementation platform('org.junit:junit-bom:5.11.4')
     // JUnit 5 본체: @Test, @DisplayName, @ParameterizedTest 등 (버전은 위 BOM이 결정)
