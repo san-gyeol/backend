@@ -1,4 +1,4 @@
-package control.domain;
+package com.sangyeol.control.domain;
 
 import java.time.LocalDateTime;
 

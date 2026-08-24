@@ -1,4 +1,4 @@
-package control.domain;
+package com.sangyeol.control.domain;
 
 public enum ControlZone {
     MUDEUNGSAN,

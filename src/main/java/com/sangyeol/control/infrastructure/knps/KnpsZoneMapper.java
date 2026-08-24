@@ -1,6 +1,6 @@
-package control.infrastructure.knps;
+package com.sangyeol.control.infrastructure.knps;
 
-import control.domain.ControlZone;
+import com.sangyeol.control.domain.ControlZone;
 import java.util.Map;
 
 final class KnpsZoneMapper {

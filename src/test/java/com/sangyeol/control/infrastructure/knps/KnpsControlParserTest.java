@@ -1,11 +1,11 @@
-package control.infrastructure.knps;
+package com.sangyeol.control.infrastructure.knps;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import control.domain.ControlSnapshot;
-import control.domain.ControlStatus;
-import control.domain.ControlZone;
+import com.sangyeol.control.domain.ControlSnapshot;
+import com.sangyeol.control.domain.ControlStatus;
+import com.sangyeol.control.domain.ControlZone;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;

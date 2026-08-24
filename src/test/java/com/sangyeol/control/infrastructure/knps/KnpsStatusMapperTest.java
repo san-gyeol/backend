@@ -1,9 +1,9 @@
-package control.infrastructure.knps;
+package com.sangyeol.control.infrastructure.knps;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import control.domain.ControlStatus;
+import com.sangyeol.control.domain.ControlStatus;
 import org.junit.jupiter.api.Test;
 
 class KnpsStatusMapperTest {

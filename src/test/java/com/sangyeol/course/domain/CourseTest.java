@@ -1,4 +1,4 @@
-package course.domain;
+package com.sangyeol.course.domain;
 
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;

@@ -1,6 +1,6 @@
-package control.infrastructure.knps;
+package com.sangyeol.control.infrastructure.knps;
 
-import control.domain.ControlStatus;
+import com.sangyeol.control.domain.ControlStatus;
 import java.util.Map;
 
 final class KnpsStatusMapper {

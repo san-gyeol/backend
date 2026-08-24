@@ -1,4 +1,4 @@
-package course.domain;
+package com.sangyeol.course.domain;
 
 public enum Difficulty {
     EASY,

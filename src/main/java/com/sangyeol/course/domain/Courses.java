@@ -1,4 +1,4 @@
-package course.domain;
+package com.sangyeol.course.domain;
 
 import java.util.List;
 
