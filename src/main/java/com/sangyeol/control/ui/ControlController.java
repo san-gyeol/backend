@@ -1,7 +1,6 @@
 package com.sangyeol.control.ui;
 
 import com.sangyeol.control.application.ControlService;
-import com.sangyeol.control.ui.dto.ControlResponse;
 import com.sangyeol.control.ui.dto.ControlsResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,9 +19,6 @@ public class ControlController {
 
     @GetMapping
     public ResponseEntity<ControlsResponse> findControls() {
-        ControlsResponse response = new ControlsResponse(controlService.findControls().stream()
-                .map(ControlResponse::from)
-                .toList());
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(ControlsResponse.from(controlService.findControls()));
     }
 }
