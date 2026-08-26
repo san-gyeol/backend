@@ -4,7 +4,13 @@
 
 ## 공통 사항
 
-- Base URL: 로컬 `http://localhost:8080` (운영 URL은 배포 후 갱신)
+- Base URL
+  - 운영: `https://sangyeol.duckdns.org`
+  - 로컬: `http://localhost:8080`
+  - ⚠️ 운영 도메인은 임시(DuckDNS)이며 정식 출시 전 팀 도메인으로 교체됩니다.
+    프론트 코드에 URL을 하드코딩하지 말고 **환경변수/상수 한 곳으로 분리**해 두세요.
+- CORS: 허용 오리진은 Vercel 프로덕션(`sangyeol-fe-web-three.vercel.app`)·브랜치 프리뷰(`sangyeol-fe-web-*.vercel.app`)·`localhost:3000`, 메서드는 GET.
+  새 오리진(커스텀 도메인 등)이 필요하면 백엔드에 요청할 것
 - 응답 인코딩: `application/json; charset=UTF-8`
 - 값 필드는 코드(`zone`, `status`)와 한글 라벨(`zoneName`, `statusName`)을 **동시에 제공**한다.
   화면 표시는 라벨을 그대로 사용하고, 분기 로직(배지 색 등)은 코드로 판단할 것 (문자열 비교 분기 방지)
