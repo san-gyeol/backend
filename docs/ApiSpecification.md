@@ -80,28 +80,130 @@
 
 ---
 
-## 2. 무등산 날씨 조회 🚧 예정 (계약 초안)
+## 2. 무등산 날씨 조회 ✅ 구현됨
 
 ### `GET /api/v1/weather`
 
-홈 화면 날씨 카드용. 데이터 출처: OpenWeatherMap (기준 지점: 무등산 주소지 좌표)
+홈 화면 날씨 카드용. 데이터 출처: OpenWeather (서버가 무등산 주소지 좌표로 실황과 3시간 예보를 조회해 조합)
 
-**응답 200 OK (초안 — 구현 시 확정)**
+**요청**: 파라미터 없음
+
+**응답 200 OK**
 
 ```json
 {
-  "temperature": 22.1,
-  "feelsLike": 25.4,
+  "temperature": 27.78,
+  "feelsLike": 28.05,
   "precipitationProbability": 20,
   "precipitationAmount": null,
-  "humidity": 100,
-  "sunrise": "05:30",
-  "sunset": "19:46",
+  "humidity": 48,
+  "sunrise": "05:49",
+  "sunset": "19:24",
   "source": "OpenWeather",
-  "updatedAt": "2026-08-25T09:40:00"
+  "updatedAt": "2026-08-13T15:50:18"
 }
 ```
 
-- 숫자 필드에 단위 문자열 없음 — °C, %, mm 표기는 화면에서
-- `precipitationAmount`가 `null`이면 강수 없음 → 화면 "-" 표시
+| 필드 | 타입 | 설명 |
+|---|---|---|
+| `temperature` | number | 현재 기온(°C). 소수 둘째 자리까지 올 수 있으므로 반올림은 화면에서 |
+| `feelsLike` | number | 체감온도(°C) |
+| `precipitationProbability` | integer | 대표 강수확률(0~100, %). 기준 시각과 같은 날짜의 남은 3시간 예보 구간 중 최댓값 |
+| `precipitationAmount` | number \| null | 최근 1시간 강수량(mm). `null`이면 강수 없음(0mm와 구분) |
+| `humidity` | integer | 습도(%) |
+| `sunrise` | string | 일출 시각 `HH:mm` (KST) |
+| `sunset` | string | 일몰 시각 `HH:mm` (KST) |
+| `source` | string | 출처 표기("OpenWeather"). 화면에 그대로 표시 (OpenWeather attribution 요건) |
+| `updatedAt` | string | OpenWeather가 자료를 산출한 시각 (ISO-8601, KST) |
+
+- 숫자 필드에 단위 문자열 없음. °C, %, mm 표기는 화면에서 붙일 것
+- `precipitationAmount`가 `null`이면 화면 "-" 표시
 - 코스별 날씨는 추후 `GET /api/v1/courses/{courseId}/weather` (같은 응답 형태) 예정
+
+**에러**
+
+| 상황 | HTTP | errorCode |
+|---|---|---|
+| OpenWeather 호출 실패 (키 오류, 쿼터 초과, 타임아웃) 또는 응답 구조 변경 | 502 | `WEATHER502_001` |
+
+→ 에러 카드("날씨 정보를 불러오지 못했어요") + "다시 시도" 버튼 표시. 다시 시도 = 본 API 재호출
+
+---
+
+## 3. 코스 날씨 조회 ✅ 구현됨
+
+### `GET /api/v1/courses/{courseId}/weather`
+
+지도 화면 바텀시트의 날씨 카드용. 기획서대로 해당 코스 거점 중 가장 높은 고도의 위치를 기준으로 조회한다
+(2026-08-23 디스코드에서 프론트 박건규와 합의). 데이터 출처와 응답 형태는 홈 날씨(2절)와 완전히 같고 기준 좌표만 다르다.
+
+**요청**: 경로 변수 `courseId` (아래 표의 정수 id). 프론트 정적 JSON의 코스 항목에 같은 `id`를 넣어 두면 연결이 끝난다.
+
+| courseId | 코스 | 기준 거점 (최고 고도) | 기준 좌표 |
+|---|---|---|---|
+| 1 | 당산나무 코스 | 중머리재 590m | 35.119077, 126.984481 |
+| 2 | 새인봉-입석대 코스 | 입석대 965m | 35.117551, 127.002573 |
+| 3 | 늦재-옛길 코스 | 장불재 894m | 35.116271, 126.998612 |
+| 4 | 시무지기폭포 코스 | 장불재 894m | 35.116271, 126.998612 |
+
+**응답 200 OK**: 2절 홈 날씨와 같은 JSON (`temperature`, `feelsLike`, `precipitationProbability`, `precipitationAmount`,
+`humidity`, `sunrise`, `sunset`, `source`, `updatedAt`). 바텀시트 카드는 `temperature`와 `feelsLike`만 쓴다.
+
+**에러**
+
+| 상황 | HTTP | errorCode |
+|---|---|---|
+| 없는 courseId (예: 9) | 404 | `COURSE404_001` |
+| 숫자가 아닌 courseId (예: abc) | 400 | `COMMON400_001` |
+| OpenWeather 호출 실패 또는 응답 구조 변경 | 502 | `WEATHER502_001` |
+
+- OpenWeather는 관측소 기반이라 거점 간 거리가 2~3km인 무등산 안에서는 홈 날씨와 코스 날씨 값이 같게 나오는 경우가 많다.
+  산악 관측 데이터가 필요해지면 기상청 조합으로 어댑터를 교체한다 (7절 소싱 맵).
+
+---
+
+## 4. 화면 매핑 (산결 리디자인 기준, 2026-09-20 점검)
+
+### 홈 화면, 무등산 날씨 카드 → `GET /api/v1/weather`
+
+| 화면 요소 | 응답 필드 | 화면 처리 |
+|---|---|---|
+| "22.1°C" | `temperature` | 소수 첫째 자리로 반올림 (27.78 → 27.8) |
+| "체감 (25.4°C)" | `feelsLike` | 같은 반올림 |
+| 강수확률 "20%" | `precipitationProbability` | 정수 그대로 + "%" |
+| 강수량(mm) "-" | `precipitationAmount` | `null`이면 "-", 값이 있으면 소수 첫째 자리 + "mm" |
+| 습도 "100%" | `humidity` | 정수 그대로 + "%" |
+| 일출 05:30 / 일몰 19:46 | `sunrise`, `sunset` | 문자열 그대로 |
+| 우측 상단 출처 라벨 | `source` | Pencil 시안은 성공 상태 "OpenWeatherMap", 로딩과 실패 상태 "기상청"으로 엇갈림. 성공 상태는 `source`("OpenWeather")를 그대로 그리고, 응답이 없는 로딩과 실패 상태는 같은 문구로 고정할 것. "실시간" 자리는 `updatedAt`의 시각(HH:mm 기준)으로 대체 가능 |
+| 카드 좌측 해 아이콘 | 해당 필드 없음 | 고정 아이콘이면 그대로. 날씨 상태에 따라 바꾸려면 백엔드에 `condition` 필드 추가 필요 (아래 5절) |
+| 로딩 상태 (스켈레톤) | 없음 | 프론트 처리. 시안 프레임 "홈 - 정보 로드 중" |
+| 실패 상태 (에러 카드 + 다시 시도) | 에러 응답 `message` | 시안 프레임 "홈 - 정보 로드 실패"의 두 줄 문구가 `message`와 글자까지 같음. 마침표 기준으로 두 줄로 나눠 그리면 됨. 다시 시도는 실패한 API만 재호출 |
+
+### 홈 화면, 실시간 통제정보 카드 → `GET /api/v1/controls`
+
+| 화면 요소 | 응답 필드 | 화면 처리 |
+|---|---|---|
+| 행 이름 "무등산", "무등산동부" | `zoneName` | 문자열 그대로. 배열 순서가 화면 순서 |
+| 배지 문구 "부분통제" | `statusName` | 문자열 그대로 |
+| 배지 색 | `status` | 디자인 시스템 "상태와 피드백"의 3단계(정상 초록, 주의 노랑, 통제 빨강)를 `NORMAL`, `PARTIAL`, `FULL`에 대응시키는 것이 자연스러움. 홈 시안은 부분통제를 빨강으로 그려 디자인 확인 필요 |
+| 우측 상단 "국립공원공단 · 실시간" | `source` | 문자열 그대로. 필요하면 `referenceTime`을 기준 시각으로 표시 |
+
+### 지도 화면, 코스 바텀시트 날씨 카드 → `GET /api/v1/courses/{courseId}/weather`
+
+| 화면 요소 | 응답 필드 | 화면 처리 |
+|---|---|---|
+| "22.1°C" | `temperature` | 소수 첫째 자리로 반올림 |
+| "체감 25.4°C" | `feelsLike` | 같은 반올림 |
+| 해 아이콘 | 해당 필드 없음 | 홈 카드와 같은 확인 사항 (아래 5절) |
+
+### 백엔드가 관여하지 않는 화면
+
+코스 목록, 지도의 거점과 시설 칩, 코스 상세(코스 여정, 코스 TIP), 준비물과 식당 카드, 더보기 화면은 프론트 정적 데이터로 처리한다.
+
+---
+
+## 5. 확인이 필요한 것
+
+1. **날씨 상태 아이콘**: 해/구름/비 아이콘을 상태에 따라 바꾸는 기획이면 `condition`(예: CLEAR, CLOUDS, RAIN, SNOW) 필드를 추가한다. 고정 아이콘이면 불필요.
+2. **홈 날씨 출처 표기**: 시안의 "기상청"은 "OpenWeather"로 바뀌어야 한다 (OpenWeather 이용 약관의 출처 표기 요건).
+3. **통제 배지 색**: 디자인 시스템의 3단계(정상 초록, 주의 노랑, 통제 빨강)와 홈 시안(부분통제 빨강)이 다르다. `FULL` 색 포함 디자인 확정 필요.
