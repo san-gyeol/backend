@@ -24,7 +24,31 @@ public Course(CourseName name, Distance distance, Duration duration, Difficulty 
 **"해당 필드가 비어 있지 않다"를 코드 레벨에서 강제하는 수단으로 `Objects.requireNonNull`을 쓰는 것이
 자연스러운(관례적인) 선택인가?**
 
-### 현재 잠정 선택과 근거
+### 현재 선택과 근거 (2026-09-20 재결정)
+
+- **원시값 생성자로 전환.** `Course`의 public 생성자는 원시값(`String`, `double`, `long`, `Difficulty`)을 받아
+  값 객체를 직접 만들고, 값 객체를 받는 정식 생성자는 private으로 내렸다.
+
+```java
+public Course(String name, double kilometers, long minutes, Difficulty difficulty) {
+    this(new CourseName(name), new Distance(kilometers), Duration.ofMinutes(minutes), difficulty);
+}
+
+private Course(CourseName name, Distance distance, Duration duration, Difficulty difficulty) {
+    validateDuration(duration);
+    validateDifficulty(difficulty);
+    // 대입
+}
+```
+
+- 효과: ① null 이름은 `CourseName` 생성자에서 IllegalArgumentException으로 걸리고, 거리와 소요시간은
+  원시값이라 null 자체가 불가능하므로 `requireNonNull`이 모두 사라졌다
+  ② 도메인 검증 예외가 IllegalArgumentException 한 종류로 통일됐다
+  ③ 값 객체 조립이 `Course` 안으로 들어가서 호출자가 값 객체의 존재를 몰라도 된다
+- 남은 존재 검증은 enum인 `Difficulty` 하나뿐이며, 통일을 위해 `requireNonNull` 대신
+  IllegalArgumentException("난이도는 비어 있을 수 없습니다")으로 처리했다.
+
+### 이력: 이전 잠정 선택 (2026-08, 재결정 전)
 
 - `requireNonNull` 채택. 근거: ① 대입과 검증이 한 표현식이라 검증 누락이 구조적으로 불가능
   ② JDK 표준 관용구 ③ null 인자에는 NPE가 관례(Effective Java 아이템 72)
@@ -33,8 +57,13 @@ public Course(CourseName name, Distance distance, Duration duration, Difficulty 
 
 ### 남은 의문
 
-- 값 객체(CourseName)는 IAE를 던지는데 조립 객체(Course)만 NPE를 던져서 도메인 검증 예외가
-  두 종류로 갈라진다 — IAE로 통일하는 것이 낫지 않은가? (팀/리뷰어의 관례가 궁금함)
+- ~~값 객체(CourseName)는 IAE를 던지는데 조립 객체(Course)만 NPE를 던져서 도메인 검증 예외가
+  두 종류로 갈라진다. IAE로 통일하는 것이 낫지 않은가?~~ → **해소 (2026-09-20):** 원시값 생성자 전환으로
+  IllegalArgumentException 한 종류가 됐다.
+- 새 의문 1: enum 인자(`Difficulty`)의 null을 IllegalArgumentException으로 처리한 것은 Effective Java
+  아이템 72의 관례(null 인자에는 NPE)에서 의도적으로 벗어난 선택이다. 예외 타입 통일이 관례보다 우선해도 되는가?
+- 새 의문 2: `Course` 생성자가 원시값만 받으면서 `CourseName`, `Distance`를 외부에서 조립할 이유가 사라졌다.
+  값 객체가 여전히 public이어야 하는가? (Courses 등 다른 곳에서 값 객체를 직접 다루게 되는 시점에 다시 판단)
 
 ## Q2. 어댑터가 만들어주는 도메인 record에도 requireNonNull이 필요한가?
 
