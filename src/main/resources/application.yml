@@ -1,2 +1,6 @@
-# 외부 클라이언트 타임아웃은 각 ClientConfig 클래스에서 설정한다 (KnpsClientConfig 참고)
+# 외부 클라이언트 타임아웃은 각 ClientConfig 클래스에서 설정한다 (KnpsClientConfig, OpenWeatherClientConfig 참고)
 # Boot 4는 RestClient.Builder를 자동 구성하지 않아 spring.http.client.* 속성이 수동 빌드 클라이언트에 적용되지 않음
+
+openweather:
+  # 키는 환경변수로만 주입한다. 비어 있으면 서버는 뜨지만 날씨 API가 502(WEATHER502_001)로 응답한다
+  api-key: ${OPENWEATHER_API_KEY:}

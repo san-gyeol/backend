@@ -1,6 +1,7 @@
 package com.sangyeol.weather.domain;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 public record WeatherSnapshot(
         double temperature,
@@ -8,8 +9,8 @@ public record WeatherSnapshot(
         int precipitationProbability,
         Double precipitationAmount,
         int humidity,
-        LocalDateTime sunrise,
-        LocalDateTime sunset,
+        LocalTime sunrise,
+        LocalTime sunset,
         String source,
         LocalDateTime updatedAt
 ) {

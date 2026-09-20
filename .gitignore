@@ -38,3 +38,5 @@ out/
 
 # Claude
 CLAUDE.md
+
+.env

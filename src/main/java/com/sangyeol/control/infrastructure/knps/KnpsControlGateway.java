@@ -3,6 +3,7 @@ package com.sangyeol.control.infrastructure.knps;
 import com.sangyeol.control.domain.ControlGateway;
 import com.sangyeol.control.domain.ControlSnapshot;
 import java.util.List;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
@@ -13,7 +14,7 @@ public class KnpsControlGateway implements ControlGateway {
 
     private final RestClient knpsRestClient;
 
-    public KnpsControlGateway(RestClient knpsRestClient) {
+    public KnpsControlGateway(@Qualifier("knpsRestClient") RestClient knpsRestClient) {
         this.knpsRestClient = knpsRestClient;
     }
 
