@@ -1,17 +1,16 @@
-package com.sangyeol.common.exception;
+package com.sangyeol.course.application;
 
+import com.sangyeol.common.exception.ErrorType;
 import org.springframework.http.HttpStatus;
 
-public enum CommonErrorType implements ErrorType {
-    INVALID_REQUEST(HttpStatus.BAD_REQUEST, "COMMON400_001", "요청 값이 올바르지 않습니다."),
-    RESOURCE_NOT_FOUND(HttpStatus.NOT_FOUND, "COMMON404_001", "요청한 리소스를 찾을 수 없습니다."),
-    UNEXPECTED_EXCEPTION(HttpStatus.INTERNAL_SERVER_ERROR, "COMMON500_001", "예기치 못한 예외가 발생했습니다.");
+public enum CourseErrorType implements ErrorType {
+    COURSE_NOT_FOUND(HttpStatus.NOT_FOUND, "COURSE404_001", "해당 코스를 찾을 수 없어요.");
 
     private final HttpStatus httpStatus;
     private final String errorCode;
     private final String errorMessage;
 
-    CommonErrorType(HttpStatus httpStatus, String errorCode, String errorMessage) {
+    CourseErrorType(HttpStatus httpStatus, String errorCode, String errorMessage) {
         this.httpStatus = httpStatus;
         this.errorCode = errorCode;
         this.errorMessage = errorMessage;
